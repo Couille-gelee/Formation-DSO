@@ -109,7 +109,14 @@ def process_file(file_name):
     #Chargement du fichier YAML
     if ".yaml" in file_name or ".yml" in file_name:
         try:
-            with open(file_name,'rb') as f:
+            base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "files"))
+            requested_path = os.path.abspath(os.path.join(base_dir, file_name))
+
+            if os.path.commonpath([base_dir, requested_path]) != base_dir:
+                err = "Invalid file path"
+                return render_template('error.html', err=err)
+
+            with open(requested_path, 'rb') as f:
                 content = f.read()
                 data = yaml.load(content, Loader=yaml.FullLoader) # Using vulnerable FullLoader
         except Exception as er:
